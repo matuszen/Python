@@ -1,11 +1,11 @@
-import numpy as np
-from typing import Union
 from collections.abc import Iterable
+
+import numpy as np
 
 
 def euclidean_distance(
-    first_point: Iterable[Union[int, float]],
-    second_point: Iterable[Union[int, float]],
+    first_point: Iterable[int | float],
+    second_point: Iterable[int | float],
 ) -> float:
     """
     Calculate the Euclidean distance between two points.
@@ -52,8 +52,8 @@ def euclidean_distance(
 
 
 def euclidean_distance_partialy_np(
-    first_point: Iterable[Union[int, float]],
-    second_point: Iterable[Union[int, float]],
+    first_point: Iterable[int | float],
+    second_point: Iterable[int | float],
 ) -> np.float64:
     """
     Calculate the Euclidean distance between two points using numpy for conversion.
@@ -105,8 +105,8 @@ def euclidean_distance_partialy_np(
 
 
 def euclidean_distance_with_np(
-    first_point: Iterable[Union[int, float]],
-    second_point: Iterable[Union[int, float]],
+    first_point: Iterable[int | float],
+    second_point: Iterable[int | float],
 ) -> np.float64:
     """
     Calculate the Euclidean distance between two points using numpy.
