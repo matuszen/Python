@@ -1,53 +1,71 @@
 import math
 from collections.abc import Callable, Iterable
 
-import matplotlib.pyplot as plt
-
 
 def euler_method(
     x0: float,
     y0: float,
     step_size: float,
     x_end: float,
-    fun: Callable,
+    fun: Callable[[float, float], float],
 ) -> Iterable[float]:
     """
-    Approximates the solution to an ordinary differential equation
-    using the Euler method.
+    Solves an initial value problem for an ordinary differential equation
+    (ODE) using the Euler method.
+
+    The Euler method is a first-order numerical procedure for solving
+    ordinary differential equations (ODEs) with a given initial value.
+    It is the simplest and most straightforward method for numerical integration.
 
     Parameters
     ----------
     x0 : float
-        The initial value of x.
+        The initial value of the independent variable.
     y0 : float
-        The initial value of y.
+        The initial value of the dependent variable.
     step_size : float
-        The step size for the approximation.
+        The step size for the numerical integration. Must be positive.
     x_end : float
-        The value of x at which to stop the approximation.
-    fun : Callable
-        A function that computes the derivative of y at (x, y).
+        The value of the independent variable at which to end the integration.
+        Must be greater than `x0`.
+    fun : (float, float) -> float
+        The function that defines the ODE. It must take two arguments: the
+        independent variable and the dependent variable.
 
     Returns
     -------
     Iterable[float]
-        A list of y values approximating the solution
-        to the differential equation at each step.
+        An iterable of the computed values of the dependent variable at each step.
 
-    Examples
-    --------
-    >>> def dy_dx(x, y):
-    ...     return x + y
-    >>> euler_method(0, 1, 0.1, 0.5, dy_dx)
-    [1, 1.1, 1.21, 1.331, 1.4641, 1.61051]
+    Raises
+    ------
+    ValueError
+        If `step_size` is not positive or if `x_end` is not greater than `x0`.
 
     Notes
     -----
-    This function uses the Euler method, which is a first-order numerical procedure for
-    solving ordinary differential equations with a given initial value.
-    The method approximates the solution by taking steps of size `step_size` and using
-    the derivative function `fun` to estimate the slope of the solution at each step.
+    The Euler method uses a fixed step size for integration and calculates the
+    number of steps based on the range and step size. It updates the dependent
+    variable by taking a step of size `step_size` in the direction of the slope
+    defined by the function `fun`.
+
+    Examples
+    --------
+    >>> def f(x, y):
+    ...     return x + y
+    >>> x0 = 0
+    >>> y0 = 1
+    >>> step_size = 0.1
+    >>> x_end = 0.5
+    >>> euler_method(x0, y0, step_size, x_end, f)
+    [1.0, 1.1, 1.21, 1.331, 1.4641, 1.61051]
     """
+
+    if step_size <= 0:
+        raise ValueError("Step size must be positive.")
+
+    if x_end <= x0:
+        raise ValueError("x_end must be greater than x0.")
 
     n = math.ceil((x_end - x0) / step_size)
 
@@ -66,6 +84,8 @@ def euler_method(
 if __name__ == "__main__":
     import timeit
 
+    import matplotlib.pyplot as plt
+
     def f(x: float, y: float) -> float:
         return x + 0.6 * y
 
@@ -73,7 +93,7 @@ if __name__ == "__main__":
     Y0 = 0.2
     # If STEP_SIZE is smaller, the chart will be more accurate,
     # compare this chart with chart with STEP_SIZE = 0.2
-    STEP_SIZE = 1.0
+    STEP_SIZE = 0.5
     X_END = 5
 
     print(
