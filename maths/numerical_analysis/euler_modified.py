@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterable
 def modified_euler_method(
     x0: float,
     y0: float,
-    step_size: float,
+    h: float,
     x_end: float,
     fun: Callable[[float, float], float],
 ) -> Iterable[float]:
@@ -24,7 +24,7 @@ def modified_euler_method(
         The initial value of the independent variable.
     y0 : float
         The initial value of the dependent variable.
-    step_size : float
+    h : float
         The step size for the numerical integration. Must be positive.
     x_end : float
         The value of the independent variable at which to end the integration.
@@ -63,24 +63,24 @@ def modified_euler_method(
     [1.0, 1.105, 1.221025, 1.349075125, 1.49026888125, 1.645832125625]
     """
 
-    if step_size <= 0:
+    if h <= 0:
         raise ValueError("Step size must be positive.")
 
     if x_end <= x0:
         raise ValueError("x_end must be greater than x0.")
 
-    n = math.ceil((x_end - x0) / step_size)
+    n = math.ceil((x_end - x0) / h)
 
     y = [0 for _ in range(n + 1)]
     y[0] = y0
     x = x0
 
     for i in range(n):
-        k1 = (x + x + step_size) * 0.5
-        k2 = y[i] + step_size * fun(x, y[i]) * 0.5
-        y[i + 1] = y[i] + step_size * fun(k1, k2)
+        k1 = (x + x + h) * 0.5
+        k2 = y[i] + h * fun(x, y[i]) * 0.5
+        y[i + 1] = y[i] + h * fun(k1, k2)
 
-        x += step_size
+        x += h
 
     return y
 
@@ -95,22 +95,22 @@ if __name__ == "__main__":
 
     X0 = 0.0
     Y0 = 0.2
-    # If STEP_SIZE is smaller, the chart will be more accurate,
-    # compare this chart with chart with STEP_SIZE = 0.2
-    STEP_SIZE = 0.5
+    # If H is smaller, the chart will be more accurate,
+    # compare this chart with chart with H = 0.2
+    H = 0.5
     X_END = 5
 
     print(
         "Execution time:",
         timeit.timeit(
-            "modified_euler_method(X0, Y0, STEP_SIZE, X_END, f)",
+            "modified_euler_method(X0, Y0, H, X_END, f)",
             number=1000,
             globals=globals(),
         ),
     )
 
-    X = [round(X0 + STEP_SIZE * i, 2) for i in range(int((X_END - X0) / STEP_SIZE) + 1)]
-    Y = modified_euler_method(X0, Y0, STEP_SIZE, X_END, f)
+    X = [round(X0 + H * i, 2) for i in range(int((X_END - X0) / H) + 1)]
+    Y = modified_euler_method(X0, Y0, H, X_END, f)
 
     with plt.style.context("bmh"):
         fig, ax = plt.subplots()

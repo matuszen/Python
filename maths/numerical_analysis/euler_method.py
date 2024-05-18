@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterable
 def euler_method(
     x0: float,
     y0: float,
-    step_size: float,
+    h: float,
     x_end: float,
     fun: Callable[[float, float], float],
 ) -> Iterable[float]:
@@ -23,7 +23,7 @@ def euler_method(
         The initial value of the independent variable.
     y0 : float
         The initial value of the dependent variable.
-    step_size : float
+    h : float
         The step size for the numerical integration. Must be positive.
     x_end : float
         The value of the independent variable at which to end the integration.
@@ -61,13 +61,13 @@ def euler_method(
     [1.0, 1.1, 1.21, 1.331, 1.4641, 1.61051]
     """
 
-    if step_size <= 0:
+    if h <= 0:
         raise ValueError("Step size must be positive.")
 
     if x_end <= x0:
         raise ValueError("x_end must be greater than x0.")
 
-    n = math.ceil((x_end - x0) / step_size)
+    n = math.ceil((x_end - x0) / h)
 
     y = [0 for _ in range(n + 1)]
     y[0] = y0
@@ -75,8 +75,8 @@ def euler_method(
     x = x0
 
     for i in range(n):
-        y[i + 1] = y[i] + step_size * fun(x, y[i])
-        x += step_size
+        y[i + 1] = y[i] + h * fun(x, y[i])
+        x += h
 
     return y
 
@@ -91,22 +91,22 @@ if __name__ == "__main__":
 
     X0 = 0.0
     Y0 = 0.2
-    # If STEP_SIZE is smaller, the chart will be more accurate,
-    # compare this chart with chart with STEP_SIZE = 0.2
-    STEP_SIZE = 0.5
+    # If H is smaller, the chart will be more accurate,
+    # compare this chart with chart with H = 0.2
+    H = 0.5
     X_END = 5
 
     print(
         "Execution time:",
         timeit.timeit(
-            "euler_method(X0, Y0, STEP_SIZE, X_END, f)",
+            "euler_method(X0, Y0, H, X_END, f)",
             number=1000,
             globals=globals(),
         ),
     )
 
-    X = [round(X0 + STEP_SIZE * i, 2) for i in range(int((X_END - X0) / STEP_SIZE) + 1)]
-    Y = euler_method(X0, Y0, STEP_SIZE, X_END, f)
+    X = [round(X0 + H * i, 2) for i in range(int((X_END - X0) / H) + 1)]
+    Y = euler_method(X0, Y0, H, X_END, f)
 
     with plt.style.context("bmh"):
         fig, ax = plt.subplots()
