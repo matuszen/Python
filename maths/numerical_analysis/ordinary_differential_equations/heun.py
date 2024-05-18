@@ -3,7 +3,7 @@ from collections.abc import Callable, Iterable
 import numpy as np
 
 
-def modified_euler_method(
+def heun_method(
     f: Callable[[float, float], float],
     x0: float,
     y0: float,
@@ -11,7 +11,7 @@ def modified_euler_method(
     x_end: float,
 ) -> Iterable[float]:
     """
-    Solves an ordinary differential equation using the modified Euler method.
+    Solves an ordinary differential equation using the Heun's method (modified Euler).
 
     Parameters
     ----------
@@ -45,13 +45,13 @@ def modified_euler_method(
     >>> y0 = 1
     >>> h = 0.1
     >>> x_end = 0.5
-    >>> modified_euler_method(f, x0, y0, h, x_end)
+    >>> heun_method(f, x0, y0, h, x_end)
     array([1.        , 1.11      , 1.24205   , 1.39846525, 1.5818041 ,
            1.79489353])
 
     Notes
     -----
-    The modified Euler method, also known as Heun's method, is a numerical procedure
+    The Heun's method, also known as modified Euler method, is a numerical procedure
     to solve ordinary differential equations of the form dy/dx = f(x, y). This method
     improves the accuracy of the standard Euler method by using the average of the
     slopes at the beginning and end of the step to compute the next value of y.
@@ -101,14 +101,14 @@ if __name__ == "__main__":
     print(
         "Execution time:",
         timeit.timeit(
-            "modified_euler_method(f, X0, Y0, H, X_END)",
+            "heun_method(f, X0, Y0, H, X_END)",
             number=1000,
             globals=globals(),
         ),
     )
 
     X = [round(X0 + H * i, 2) for i in range(int((X_END - X0) / H) + 1)]
-    Y = modified_euler_method(f, X0, Y0, H, X_END)
+    Y = heun_method(f, X0, Y0, H, X_END)
 
     with plt.style.context("bmh"):
         fig, ax = plt.subplots()
