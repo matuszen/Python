@@ -72,13 +72,13 @@ def runge_kutta_method(
     y[0] = y0
     sixth_h = h / 6
 
-    for k in range(n):
-        k1 = f(x, y[k])
+    for i in range(n):
+        k1 = f(x, y[i])
         h_k1_2 = 0.5 * h * k1
-        k2 = f(x + 0.5 * h, y[k] + h_k1_2)
-        k3 = f(x + 0.5 * h, y[k] + 0.5 * h * k2)
-        k4 = f(x + h, y[k] + h * k3)
-        y[k + 1] = y[k] + sixth_h * (k1 + 2 * k2 + 2 * k3 + k4)
+        k2 = f(x + 0.5 * h, y[i] + h_k1_2)
+        k3 = f(x + 0.5 * h, y[i] + 0.5 * h * k2)
+        k4 = f(x + h, y[i] + h * k3)
+        y[i + 1] = y[i] + sixth_h * (k1 + 2 * k2 + 2 * k3 + k4)
         x += h
 
     return y
