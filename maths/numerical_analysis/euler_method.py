@@ -1,53 +1,41 @@
-import math
 from collections.abc import Callable, Iterable
+
+import numpy as np
 
 
 def euler_method(
+    f: Callable[[float, float], float],
     x0: float,
     y0: float,
     h: float,
     x_end: float,
-    fun: Callable[[float, float], float],
 ) -> Iterable[float]:
     """
-    Solves an initial value problem for an ordinary differential equation
-    (ODE) using the Euler method.
-
-    The Euler method is a first-order numerical procedure for solving
-    ordinary differential equations (ODEs) with a given initial value.
-    It is the simplest and most straightforward method for numerical integration.
+    Solves an ordinary differential equation using the Euler method.
 
     Parameters
     ----------
+    f : (float, float) -> float
+        A function that returns the derivative of y at given values of x and y.
     x0 : float
-        The initial value of the independent variable.
+        The initial value of x.
     y0 : float
-        The initial value of the dependent variable.
+        The initial value of y.
     h : float
-        The step size for the numerical integration. Must be positive.
+        The step size for the numerical solution.
     x_end : float
-        The value of the independent variable at which to end the integration.
-        Must be greater than `x0`.
-    fun : (float, float) -> float
-        The function that defines the ODE. It must take two arguments: the
-        independent variable and the dependent variable.
+        The value of x at which to stop the computation.
 
     Returns
     -------
     Iterable[float]
-        An iterable of the computed values of the dependent variable at each step.
+        Array of y values at each step from x0 to x_end.
 
     Raises
     ------
     ValueError
-        If `step_size` is not positive or if `x_end` is not greater than `x0`.
-
-    Notes
-    -----
-    The Euler method uses a fixed step size for integration and calculates the
-    number of steps based on the range and step size. It updates the dependent
-    variable by taking a step of size `step_size` in the direction of the slope
-    defined by the function `fun`.
+        If `h` is not positive.
+        If `x_end` is less than or equal to `x0`.
 
     Examples
     --------
@@ -55,36 +43,48 @@ def euler_method(
     ...     return x + y
     >>> x0 = 0
     >>> y0 = 1
-    >>> step_size = 0.1
+    >>> h = 0.1
     >>> x_end = 0.5
-    >>> euler_method(x0, y0, step_size, x_end, f)
-    [1.0, 1.1, 1.21, 1.331, 1.4641, 1.61051]
+    >>> euler_method(f, x0, y0, h, x_end)
+    array([1.     , 1.1    , 1.22   , 1.362  , 1.5282 , 1.72102])
+
+    Notes
+    -----
+    The Euler method is a simple numerical procedure for solving ordinary differential
+    equations of the form dy/dx = f(x, y). It is the most basic explicit method for
+    numerical integration of ordinary differential equations and is the simplest
+    Runge-Kutta method. The method involves taking steps of size `h` and approximating
+    the slope at each step to compute the next value of y.
     """
 
     if h <= 0:
-        raise ValueError("Step size must be positive.")
+        raise ValueError("Step size must be positive")
 
     if x_end <= x0:
-        raise ValueError("x_end must be greater than x0.")
+        raise ValueError(
+            "The final value of x must be greater than the first value of x"
+        )
 
-    n = math.ceil((x_end - x0) / h)
-
-    y = [0 for _ in range(n + 1)]
-    y[0] = y0
+    n = int((x_end - x0) / h)
+    y = np.zeros(n + 1)
 
     x = x0
+    y[0] = y0
 
     for i in range(n):
-        y[i + 1] = y[i] + h * fun(x, y[i])
+        y[i + 1] = y[i] + h * f(x, y[i])
         x += h
 
     return y
 
 
 if __name__ == "__main__":
+    import doctest
     import timeit
 
     import matplotlib.pyplot as plt
+
+    doctest.testmod()
 
     def f(x: float, y: float) -> float:
         return x + 0.6 * y
@@ -99,14 +99,14 @@ if __name__ == "__main__":
     print(
         "Execution time:",
         timeit.timeit(
-            "euler_method(X0, Y0, H, X_END, f)",
+            "euler_method(f, X0, Y0, H, X_END)",
             number=1000,
             globals=globals(),
         ),
     )
 
     X = [round(X0 + H * i, 2) for i in range(int((X_END - X0) / H) + 1)]
-    Y = euler_method(X0, Y0, H, X_END, f)
+    Y = euler_method(f, X0, Y0, H, X_END)
 
     with plt.style.context("bmh"):
         fig, ax = plt.subplots()

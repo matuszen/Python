@@ -1,55 +1,41 @@
-import math
 from collections.abc import Callable, Iterable
+
+import numpy as np
 
 
 def modified_euler_method(
+    f: Callable[[float, float], float],
     x0: float,
     y0: float,
     h: float,
     x_end: float,
-    fun: Callable[[float, float], float],
 ) -> Iterable[float]:
     """
-    Solves an initial value problem for an ordinary differential equation (ODE)
-    using the Modified Euler method.
-
-    The Modified Euler method, also known as Heun's method, is a numerical technique
-    used to solve first-order ODEs. It improves the accuracy of
-    the standard Euler method by incorporating an average of the slopes at
-    the beginning and the end of the interval.
+    Solves an ordinary differential equation using the modified Euler method.
 
     Parameters
     ----------
+    f : (float, float) -> float
+        A function that returns the derivative of y at given values of x and y.
     x0 : float
-        The initial value of the independent variable.
+        The initial value of x.
     y0 : float
-        The initial value of the dependent variable.
+        The initial value of y.
     h : float
-        The step size for the numerical integration. Must be positive.
+        The step size for the numerical solution.
     x_end : float
-        The value of the independent variable at which to end the integration.
-        Must be greater than `x0`.
-    fun : (float, float) -> float
-        The function that defines the ODE. It must take two arguments:
-        the independent variable and the dependent variable.
+        The value of x at which to stop the computation.
 
     Returns
     -------
     Iterable[float]
-        An iterable of the computed values of the dependent variable at each step.
+        Array of y values at each step from x0 to x_end.
 
     Raises
     ------
     ValueError
-        If `step_size` is not positive or if `x_end` is not greater than `x0`.
-
-    Notes
-    -----
-    The function uses a fixed step size for integration and calculates
-    the number of steps based on the range and step size.
-    The Modified Euler method involves two stages:
-    1. An initial estimate of the slope (k1) at the beginning of the interval.
-    2. A corrected slope (k2) that uses the midpoint value.
+        If `h` is not positive.
+        If `x_end` is less than or equal to `x0`.
 
     Examples
     --------
@@ -57,38 +43,50 @@ def modified_euler_method(
     ...     return x + y
     >>> x0 = 0
     >>> y0 = 1
-    >>> step_size = 0.1
+    >>> h = 0.1
     >>> x_end = 0.5
-    >>> modified_euler_method(x0, y0, step_size, x_end, f)
-    [1.0, 1.105, 1.221025, 1.349075125, 1.49026888125, 1.645832125625]
+    >>> modified_euler_method(f, x0, y0, h, x_end)
+    array([1.        , 1.11      , 1.24205   , 1.39846525, 1.5818041 ,
+           1.79489353])
+
+    Notes
+    -----
+    The modified Euler method, also known as Heun's method, is a numerical procedure
+    to solve ordinary differential equations of the form dy/dx = f(x, y). This method
+    improves the accuracy of the standard Euler method by using the average of the
+    slopes at the beginning and end of the step to compute the next value of y.
     """
 
     if h <= 0:
-        raise ValueError("Step size must be positive.")
+        raise ValueError("Step size must be positive")
 
     if x_end <= x0:
-        raise ValueError("x_end must be greater than x0.")
+        raise ValueError(
+            "The final value of x must be greater than the first value of x"
+        )
 
-    n = math.ceil((x_end - x0) / h)
+    n = int((x_end - x0) / h)
+    y = np.zeros(n + 1)
 
-    y = [0 for _ in range(n + 1)]
-    y[0] = y0
     x = x0
+    y[0] = y0
 
     for i in range(n):
         k1 = (x + x + h) * 0.5
-        k2 = y[i] + h * fun(x, y[i]) * 0.5
-        y[i + 1] = y[i] + h * fun(k1, k2)
-
+        k2 = y[i] + h * f(x, y[i]) * 0.5
+        y[i + 1] = y[i] + h * f(k1, k2)
         x += h
 
     return y
 
 
 if __name__ == "__main__":
+    import doctest
     import timeit
 
     import matplotlib.pyplot as plt
+
+    doctest.testmod()
 
     def f(x: float, y: float) -> float:
         return x + 0.6 * y
@@ -103,14 +101,14 @@ if __name__ == "__main__":
     print(
         "Execution time:",
         timeit.timeit(
-            "modified_euler_method(X0, Y0, H, X_END, f)",
+            "modified_euler_method(f, X0, Y0, H, X_END)",
             number=1000,
             globals=globals(),
         ),
     )
 
     X = [round(X0 + H * i, 2) for i in range(int((X_END - X0) / H) + 1)]
-    Y = modified_euler_method(X0, Y0, H, X_END, f)
+    Y = modified_euler_method(f, X0, Y0, H, X_END)
 
     with plt.style.context("bmh"):
         fig, ax = plt.subplots()
