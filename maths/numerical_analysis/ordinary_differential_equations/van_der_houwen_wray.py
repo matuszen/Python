@@ -1,4 +1,4 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 
 import numpy as np
 
@@ -9,7 +9,7 @@ def van_der_houwen_wray_method(
     y0: float,
     h: float,
     x_end: float,
-) -> Iterable[float]:
+) -> np.ndarray[tuple[int], float]:
     """
     Solves an ordinary differential equation using the Van der Houwen-Wray method.
 
@@ -28,8 +28,8 @@ def van_der_houwen_wray_method(
 
     Returns
     -------
-    Iterable[float]
-        Array of y values at each step from x0 to x_end.
+    ndarray[(int), float]
+        One-dimensional array of y values at each step from x0 to x_end.
 
     Raises
     ------
@@ -82,9 +82,7 @@ def van_der_houwen_wray_method(
     c = [1 / 4, 0, 3 / 4]
 
     for i in range(n):
-        # Simplify this line for better computing efficiency
-        # k1 = f(x + h * a[0], y[i] + h * b[0][0])
-        k1 = f(x, y[i])
+        k1 = f(x + h * a[0], y[i] + h * b[0][0])
         k2 = f(x + h * a[1], y[i] + h * b[1][0] * k1)
         k3 = f(x + h * a[2], y[i] + h * b[2][1] * k2)
 

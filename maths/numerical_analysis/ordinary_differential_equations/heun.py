@@ -1,4 +1,4 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 
 import numpy as np
 
@@ -9,7 +9,7 @@ def heun_method(
     y0: float,
     h: float,
     x_end: float,
-) -> Iterable[float]:
+) -> np.ndarray[tuple[int], float]:
     """
     Solves an ordinary differential equation using the Heun's method (modified Euler).
 
@@ -28,8 +28,8 @@ def heun_method(
 
     Returns
     -------
-    Iterable[float]
-        Array of y values at each step from x0 to x_end.
+    ndarray[(int), float]
+        One-dimensional array of y values at each step from x0 to x_end.
 
     Raises
     ------
@@ -66,7 +66,7 @@ def heun_method(
         )
 
     n = int((x_end - x0) / h)
-    y = np.zeros(n + 1)
+    y = np.zeros((n + 1,))
 
     x = x0
     y[0] = y0
@@ -95,8 +95,8 @@ if __name__ == "__main__":
     Y0 = 0.2
     # If H is smaller, the chart will be more accurate,
     # compare this chart with chart with H = 0.2
-    H = 0.5
-    X_END = 5
+    H = 1
+    X_END = 10
 
     print(
         "Execution time:",
@@ -113,9 +113,10 @@ if __name__ == "__main__":
     with plt.style.context("bmh"):
         fig, ax = plt.subplots()
 
-        ax.plot(X, Y, "r", label="f(x, y) = x + 0.6 * y")
+        ax.plot(X, Y, color="red", label="f(x, y) = x + 0.6 * y")
+        ax.plot(X, Y, color="red", marker="o", linewidth=1, label="Calculated points")
 
-        ax.set_title("Modified euler method")
+        ax.set_title("Heun's method")
         ax.set_xlabel("X Axis")
         ax.set_ylabel("Y Axis")
 

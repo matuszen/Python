@@ -5,7 +5,7 @@ https://math.libretexts.org/Workbench/Numerical_Methods_with_Applications_(Kaw)/
 Author : Mateusz Nowak
 """
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 
 import numpy as np
 
@@ -16,7 +16,7 @@ def midpoint_method(
     y0: float,
     h: float,
     x_end: float,
-) -> Iterable[float]:
+) -> np.ndarray[tuple[int], float]:
     """
     Solves an ordinary differential equation using the midpoint method.
 
@@ -35,8 +35,8 @@ def midpoint_method(
 
     Returns
     -------
-    Iterable[float]
-        Array of y values at each step from x0 to x_end.
+    ndarray[(int), float]
+        One-dimensional array of y values at each step from x0 to x_end.
 
     Raises
     ------
